@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>8.D-pedia</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 2rem; background:#f9f9f9; }
+  #search { width: 100%; padding: 0.5rem; font-size: 1rem; }
+  #suggestions { margin-top: 0.5rem; list-style: none; padding: 0; }
+  #suggestions li { background: #fff; padding: 0.5rem; margin-bottom: 0.2rem; cursor: pointer; border: 1px solid #ccc; }
+  #suggestions li:hover { background: #eee; }
+</style>
+</head>
+<body>
+
+<h1>8.D-pedia</h1>
+<input type="text" id="search" placeholder="Keress...">
+<ul id="suggestions"></ul>
+
+<script>
+// Article list (display names and filenames separately)
+const articles = [
+  { name: "a legendárok", file: "a_legendarok.html" },
+  { name: "füleky", file: "fuleky.html" },
+  { name: "clash royale 8.d", file: "clashroyale_8d.html" },
+  { name: "ecseg kontra heréd", file: "ecseg_kontra_hered.html" }
+];
+
+const searchInput = document.getElementById('search');
+const suggestions = document.getElementById('suggestions');
+
+searchInput.addEventListener('input', () => {
+  const query = searchInput.value.toLowerCase();
+  suggestions.innerHTML = '';
+  if (!query) return;
+
+  const matches = articles.filter(article => article.name.toLowerCase().includes(query));
+  matches.forEach(match => {
+    const li = document.createElement('li');
+    li.textContent = match.name;
+    li.onclick = () => {
+      window.location.href = `articles/${encodeURIComponent(match.file)}`;
+    };
+    suggestions.appendChild(li);
+  });
+});
+</script>
+
+</body>
+</html>
