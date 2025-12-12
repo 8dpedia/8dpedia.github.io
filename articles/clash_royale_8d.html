@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Clash Royale 8.D Edition — Christmas Beta</title>
+<style>
+  :root{
+    --bg1:#0f1221;
+    --bg2:#161724;
+    --accent1:#ff7a18;
+    --accent2:#af002d;
+    --glass: rgba(255,255,255,0.03);
+    --glass-2: rgba(255,255,255,0.02);
+    --muted: #a8acc9;
+    --max-width:1100px;
+  }
+
+  /* Base layout */
+  html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial; background: linear-gradient(135deg,var(--bg1),var(--bg2)); color:#fff;}
+  .wrap{max-width:var(--max-width);margin:32px auto;padding:24px;box-sizing:border-box;width:calc(100% - 32px);}
+
+  /* Header block (left-aligned) */
+  .header{
+    display:flex; align-items:flex-start; gap:20px; width:100%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius:14px; padding:18px; box-shadow: 0 6px 30px rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.03);
+  }
+
+  .app-icon{
+    width:112px;height:112px;border-radius:22px;flex:0 0 112px;overflow:hidden;border:1px solid rgba(255,255,255,0.04);
+    background: linear-gradient(180deg,var(--accent1),var(--accent2));
+    display:flex;align-items:center;justify-content:center;
+  }
+  .app-icon img{width:100%;height:100%;object-fit:cover;display:block}
+
+  .meta{
+    display:flex;flex-direction:column; gap:8px; flex:1 1 auto;
+  }
+
+  .title-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  h1{margin:0;font-weight:700;font-size:1.6rem;line-height:1.05;background:linear-gradient(90deg,var(--accent1),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .subtitle{color:var(--muted);margin:0;font-size:0.95rem}
+
+  .desc{color:#dbe0ff;margin:6px 0 0 0;max-width:64ch;font-size:0.98rem}
+  .meta-bottom{display:flex;align-items:center;gap:12px;margin-top:12px;flex-wrap:wrap}
+
+  .badge{
+    background: linear-gradient(90deg,var(--accent1),var(--accent2));
+    padding:6px 10px;border-radius:999px;font-weight:600;font-size:0.9rem;color:white;box-shadow:0 6px 18px rgba(175,0,45,0.18);
+  }
+
+  .info{
+    background:var(--glass);
+    padding:8px 12px;border-radius:10px;font-size:0.92rem;color:var(--muted);
+    display:flex;gap:10px;align-items:center;border:1px solid rgba(255,255,255,0.02);
+  }
+
+  .cta{
+    margin-left:auto; display:flex; gap:10px; align-items:center;
+  }
+
+  .download{
+    background: linear-gradient(90deg,var(--accent1),var(--accent2));
+    color:white;padding:10px 18px;border-radius:12px;text-decoration:none;font-weight:700;
+    box-shadow: 0 8px 28px rgba(175,0,45,0.18); transition: transform .14s ease, box-shadow .14s ease;
+  }
+  .download:active{ transform: translateY(1px) }
+  .download:hover{ transform: scale(1.02); box-shadow: 0 12px 36px rgba(175,0,45,0.24) }
+
+  /* Two-column content under header: features left, screenshots right (switch on mobile) */
+  .content{
+    margin-top:20px; display:grid; grid-template-columns: 1fr 420px; gap:22px;
+  }
+  .features{
+    background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));
+    padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.02);
+  }
+  .features h3{margin:0 0 8px 0;color:var(--accent1);font-size:1.05rem}
+  .feature-list{padding-left:18px;margin:0;color:var(--muted)}
+  .feature-list li{margin-bottom:8px;line-height:1.45}
+
+  .right-column{
+    display:flex;flex-direction:column;gap:12px;
+  }
+
+  /* Screenshots grid — portrait (vertical) cards */
+  .screens{
+    display:grid;grid-template-columns: repeat(2,1fr);gap:12px;
+    align-content:start;
+  }
+  .shot{
+    width:100%; aspect-ratio: 9 / 16; /* portrait */
+    background:var(--glass-2); border-radius:12px; overflow:hidden; border:1px solid rgba(255,255,255,0.03);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    cursor:pointer; position:relative;
+    transform-origin:center center; transition: transform .25s cubic-bezier(.2,.9,.2,1);
+  }
+  .shot img{width:100%;height:100%;object-fit:cover;display:block}
+  .shot:hover{transform: translateY(-6px) scale(1.02)}
+
+  /* small labels on shots */
+  .shot .label{position:absolute;left:10px;bottom:10px;background:rgba(0,0,0,0.45);backdrop-filter: blur(6px);padding:6px 8px;border-radius:8px;font-size:0.85rem;color:#fff;border:1px solid rgba(255,255,255,0.03)}
+
+  /* modal lightbox for screenshots */
+  .modal{
+    position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.85));z-index:1200;
+  }
+  .modal.open{display:flex}
+  .modal .inner{max-width:90vw;max-height:90vh;border-radius:14px;overflow:hidden;box-shadow:0 40px 120px rgba(0,0,0,0.8)}
+  .modal img{width:100%;height:auto;display:block}
+
+  /* small footer / extra info */
+  .extra{
+    margin-top:18px;color:var(--muted);font-size:0.9rem;
+  }
+
+  /* responsive */
+  @media (max-width:1000px){
+    .content{grid-template-columns:1fr 340px}
+    .screens{grid-template-columns: repeat(2,1fr)}
+  }
+  @media (max-width:720px){
+    .header{flex-direction:column;align-items:flex-start}
+    .cta{margin-left:0;width:100%;justify-content:flex-start}
+    .content{grid-template-columns:1fr; gap:16px}
+    .right-column{order:2}
+    .screens{grid-template-columns: repeat(2,1fr)}
+  }
+  @media (max-width:420px){
+    .app-icon{width:86px;height:86px;flex:0 0 86px}
+    h1{font-size:1.35rem}
+    .screens{grid-template-columns: 1fr}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap" role="main">
+
+  <!-- HEADER -->
+  <header class="header" aria-label="Game header">
+    <div class="app-icon" aria-hidden="true">
+      <!-- Replace app_icon.png with your icon file -->
+      <img src="logo.png" alt="Clash Royale 8.D Edition Icon">
+    </div>
+
+    <div class="meta">
+      <div class="title-row">
+        <h1>Clash Royale 8.D Edition</h1>
+        <div class="badge" aria-hidden="true">Christmas Beta</div>
+      </div>
+
+      <p class="subtitle">A personalized Clash Royale experience featuring your classmates as cards, chest upgrades and festive holiday content.</p>
+
+      <p class="desc">Tap-to-unbox mechanics, progressive star upgrades and playful AI opponents — built as a small holiday demo. Expect more features in future releases.</p>
+
+      <div class="meta-bottom">
+        <div class="info" title="Version">
+          <strong style="color:#fff;margin-right:8px">Version</strong>
+          <span>Christmas Beta</span>
+        </div>
+
+        <div class="info" title="Release date">
+          <strong style="color:#fff;margin-right:8px">Release</strong>
+          <span>Dec 24 • 18:00</span>
+        </div>
+
+        <div class="cta" role="region" aria-label="Call to action">
+          <a class="download" href="" id="downloadBtn">Download Now</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <div class="content" aria-label="Main content">
+
+    <!-- LEFT: Features -->
+    <section class="features" aria-labelledby="featuresTitle">
+      <h3 id="featuresTitle">Features</h3>
+      <ul class="feature-list">
+        <li>Personalized cards for anyone who wants to be in it.</li>
+        <li>Chests with Clash Royale-like features.</li>
+        <li>Christmas-themed beta release.</li>
+      </ul>
+
+      <div class="extra">
+        <p><strong>Notes:</strong> This is a developer preview. There may be some bugs and limitations. Online multiplayer coming later.</p>
+      </div>
+    </section>
+
+    <!-- RIGHT: Screenshots -->
+    <aside class="right-column" aria-label="Screenshots and preview">
+      <div>
+        <h3 style="margin:0 0 10px 0;color:var(--accent1)">Screenshots</h3>
+
+        <div class="screens" role="list">
+          <!-- PORTRAIT screenshots. Replace these files -->
+          <div class="shot" role="listitem" tabindex="0" data-src="screenshot1.png" aria-label="Screenshot 1">
+            <img src="screenshot1.png" alt="Screenshot 1 — main menu">
+            <div class="label">Main Menu</div>
+          </div>
+
+          <div class="shot" role="listitem" tabindex="0" data-src="screenshot2.png" aria-label="Screenshot 2">
+            <img src="screenshot2.png" alt="Screenshot 2 — chest unboxing">
+            <div class="label">Chest Unbox</div>
+          </div>
+
+          <div class="shot" role="listitem" tabindex="0" data-src="screenshot3.png" aria-label="Screenshot 3">
+            <img src="screenshot3.png" alt="Screenshot 3 — match">
+            <div class="label">Developer view</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- small footer area inside right column -->
+      <div style="margin-top:10px;color:var(--muted);font-size:0.9rem">
+        <div><strong>Version:</strong> Christmas Beta</div>
+        <div><strong>Release:</strong> Dec 24 • 18:00</div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- LIGHTBOX MODAL -->
+  <div class="modal" id="lightbox" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="inner" role="document">
+      <img src="" alt="Screenshot preview" id="lightboxImg">
+    </div>
+  </div>
+
+  <footer style="margin-top:26px;color:var(--muted);font-size:0.9rem">
+    © 2025-2026 Keve — Clash Royale 8.D Edition
+  </footer>
+</div>
+
+<script>
+  // LIGHTBOX: open screenshot on click or enter
+  (function(){
+    const shots = document.querySelectorAll('.shot');
+    const lb = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lightboxImg');
+
+    function open(src, alt){
+      lbImg.src = src;
+      lbImg.alt = alt || 'Screenshot preview';
+      lb.classList.add('open');
+      lb.setAttribute('aria-hidden','false');
+      document.body.style.overflow = 'hidden';
+    }
+    function close(){
+      lb.classList.remove('open');
+      lb.setAttribute('aria-hidden','true');
+      lbImg.src = '';
+      document.body.style.overflow = '';
+    }
+
+    shots.forEach(s=>{
+      s.addEventListener('click', ()=> open(s.dataset.src, s.querySelector('img').alt));
+      s.addEventListener('keydown', (e)=> { if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(s.dataset.src, s.querySelector('img').alt); } });
+    });
+
+    lb.addEventListener('click', (e)=>{
+      if(e.target === lb || e.target === lbImg) close();
+    });
+
+    document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') close(); });
+
+    // subtle progressive image loading fallback
+    shots.forEach(s=>{
+      const img = s.querySelector('img');
+      img.addEventListener('error', ()=> { s.style.background = 'linear-gradient(180deg,#2a2a3f,#1e1e2f)'; s.innerHTML = '<div style="padding:20px;color:#ccc">Missing image</div>'; });
+    });
+
+    // Download button: small UX hint
+    const dl = document.getElementById('downloadBtn');
+    dl.addEventListener('click', ()=> {
+      // small click effect; keep default navigation
+      dl.style.transform = 'translateY(1px)';
+      setTimeout(()=> dl.style.transform = '';
+                  ,120);
+    });
+  })();
+</script>
+</body>
+</html>
